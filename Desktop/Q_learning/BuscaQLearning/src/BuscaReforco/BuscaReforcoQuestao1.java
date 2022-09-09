@@ -11,7 +11,7 @@ package BuscaReforco;
 public class BuscaReforcoQuestao1{
     private int agente;
     private int objetivo;
-    public int [][] tabuleiro = new int[18][17];
+    public int [][] tabuleiro = new int[20][20];
 
     public BuscaReforcoQuestao1() {
     }
