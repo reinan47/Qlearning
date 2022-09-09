@@ -131,7 +131,7 @@ public class BuscaQuestao2 extends JPanel{
         int salvaL = i;
         int salvaC = j;
         //comecando as movimentações
-        while(contAux < 5000){
+        while(contAux < 50000){
             aux = acao[(int)(Math.random()*4)];
             if(br.tabuleiro[i+1][j] != 1 || br.tabuleiro[i+1][j] == 10 
                     || br.tabuleiro[i-1][j] != 1 || br.tabuleiro[i-1][j] == 10
@@ -162,7 +162,7 @@ public class BuscaQuestao2 extends JPanel{
             p.add(agente);
             p.revalidate();
             p.repaint();
-            //
+            TimeUnit.MILLISECONDS.sleep(5);
             if(br.tabuleiro[i+1][j] == 10 
                     ||br.tabuleiro[i-1][j] == 10
                     ||br.tabuleiro[i][j+1] == 10
@@ -178,7 +178,7 @@ public class BuscaQuestao2 extends JPanel{
                     i = (int) (Math.random()*61);
                     //j = (int) (Math.random()*5);
                 }
-                //TimeUnit.SECONDS.sleep(1);
+                //TimeUnit.SECONDS.sleep(5);
             }
 
             for(int a = 0 ; a < lc.length ; a ++){
