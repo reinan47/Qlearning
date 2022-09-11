@@ -65,16 +65,18 @@ public class BuscaQuestao2 extends JPanel{
                 }
             }
         }
-        FileWriter dadosTB =  new FileWriter(new File(caminho));        
+        //tirar comentario para deixar atabela vazia padrão com tds as ações com 0.00
+        //e depois de rodar a primeira vez pode comentar
+        /*FileWriter dadosTB =  new FileWriter(new File(caminho));        
 
-       for(int i = 0 ; i < 61 ; i++){
+        for(int i = 0 ; i < 61 ; i++){
             for(int j = 0 ; j < 61 ; j++){
                 if(br.tabuleiro[i][j] != 1){
-                    dadosTB.write(i +";"+j+";B"+0.00+";C"+0.00+";E"+0.00+";D"+0.00 + "\n");
+                    dadosTB.write(i+";"+j+";B"+0.00+";C"+0.00+";E"+0.00+";D"+0.00 + "\n");
                 }          
             }
         }
-        dadosTB.close();
+        dadosTB.close();*/
         BufferedReader carregarDados =  new BufferedReader(new FileReader(caminho));
         LinhaColuna []lc = new LinhaColuna[1925];
         int linha;
@@ -84,11 +86,10 @@ public class BuscaQuestao2 extends JPanel{
         double cima =0 ;
         double baixo = 0;
         String []lineCarga = new String[6];
-        String line = carregarDados.readLine();
-        lineCarga = line.split(";");
+        
         int contLinha = 0;
         while(carregarDados.ready()){
-            line = carregarDados.readLine();
+            String line = carregarDados.readLine();
             lineCarga = line.split(";");
             
             linha = Integer.parseInt(lineCarga[0]);
@@ -112,7 +113,7 @@ public class BuscaQuestao2 extends JPanel{
         ja.revalidate();
         ja.repaint();
         //int i = (int) (Math.random()*5);
-        int i = (int) (Math.random()*61);
+        int i =(int) (Math.random()*61);
         //int j = (int) (Math.random()*5);
         int j = (int) (Math.random()*61);
         while(br.tabuleiro[i][j] == 1){
@@ -121,6 +122,8 @@ public class BuscaQuestao2 extends JPanel{
             //j = (int) (Math.random()*5);
             j = (int) (Math.random()*61); 
         }
+        i = 1;
+        j = 29;
         int contAux = 0;
         String []acao = {"esquerda","direita","cima","baixo"};
         String aux;
@@ -131,29 +134,24 @@ public class BuscaQuestao2 extends JPanel{
         int salvaL = i;
         int salvaC = j;
         //comecando as movimentações
-        while(contAux < 50000){
+        while(contAux < 80000){
             aux = acao[(int)(Math.random()*4)];
-            if(br.tabuleiro[i+1][j] != 1 || br.tabuleiro[i+1][j] == 10 
-                    || br.tabuleiro[i-1][j] != 1 || br.tabuleiro[i-1][j] == 10
-                    || br.tabuleiro[i][j+1] != 1 || br.tabuleiro[i][j+1] == 10
-                    || br.tabuleiro[i][j-1] != 1 || br.tabuleiro[i][j-1] == 10){
-                if(aux == "cima"){
-                    if(br.tabuleiro[i-1][j] != 1)
-                       i-=1;
-                }
-                else if(aux == "baixo"){
-                    if(br.tabuleiro[i+1][j] != 1)
-                       i+=1;
-                }
-                else if(aux == "esquerda"){
-                    if(br.tabuleiro[i][j-1] != 1)
-                       j-=1;
-                }
-                else if(aux == "direita"){
-                    if(br.tabuleiro[i][j+1] != 1)
-                       j+=1;
-                }
+            if(aux == "cima"){
+                if(br.tabuleiro[i-1][j] != 1)
+                   i-=1;
             }
+            if(aux == "baixo"){
+                if(br.tabuleiro[i+1][j] != 1)
+                    i+=1;
+            }
+            if(aux == "esquerda"){
+                if(br.tabuleiro[i][j-1] != 1)
+                    j-=1;
+            }
+            if(aux == "direita"){
+                if(br.tabuleiro[i][j+1] != 1)
+                    j+=1;
+           }
 
             recompensa = br.tabuleiro[i][j]; 
             agente.setBounds(200+(j*10), 20+(i*10), 10, 10);
@@ -162,11 +160,38 @@ public class BuscaQuestao2 extends JPanel{
             p.add(agente);
             p.revalidate();
             p.repaint();
-            TimeUnit.MILLISECONDS.sleep(5);
-            if(br.tabuleiro[i+1][j] == 10 
-                    ||br.tabuleiro[i-1][j] == 10
-                    ||br.tabuleiro[i][j+1] == 10
-                    ||br.tabuleiro[i][j-1] == 10){
+            //TimeUnit.MILLISECONDS.sleep(1000);
+            //salvar as informações no vetor da estrutura do arquivo
+            for(int a = 0 ; a < lc.length ; a ++){
+                if(lc[a] == null)break;
+                if(lc[a].getLinha() == salvaL && lc[a].getColuna() == salvaC){
+
+                    lc[a].setLinha(salvaL);
+                    lc[a].setColuna(salvaC);
+                    
+                    acaoAux = b.maxAcao(s1, s2, s3, s4);
+                    
+                    if(i > salvaL){
+                        lc[a].setBaixo(recompensa + fatorAprendizado * acaoAux);
+                    }
+                    else if(i < salvaL){
+                       lc[a].setCima(recompensa + fatorAprendizado * acaoAux);
+                    }
+                    else if(j < salvaC){
+                        lc[a].setEsquerda(recompensa + fatorAprendizado * acaoAux);
+                    }
+                    else if(j > salvaC){
+                        lc[a].setDireita(recompensa + fatorAprendizado * acaoAux);
+                    }
+                    s1 = lc[a].getBaixo();
+                    s2 = lc[a].getCima();
+                    s3 = lc[a].getEsquerda();
+                    s4 = lc[a].getDireita();
+                }
+            }
+            
+            
+            if(br.tabuleiro[i][j] == 10){
                
                 i = (int) (Math.random()*61);
                 //j = (int) (Math.random()*5);
@@ -177,42 +202,16 @@ public class BuscaQuestao2 extends JPanel{
                     //j = (int) (Math.random()*5);
                     i = (int) (Math.random()*61);
                     //j = (int) (Math.random()*5);
-                }
-                //TimeUnit.SECONDS.sleep(5);
-            }
-
-            for(int a = 0 ; a < lc.length ; a ++){
-                if(lc[a] == null)break;
-                if(lc[a].getLinha() == i && lc[a].getColuna() == j){
-                    s1 = lc[a].getBaixo();
-                    s2 = lc[a].getCima();
-                    s3 = lc[a].getEsquerda();
-                    s4 = lc[a].getDireita();
-                    lc[a].setLinha(i);
-                    lc[a].setColuna(j);
-                }
-                
-                acaoAux = b.maxAcao(s1, s2, s3, s4);
-                if(i < salvaL){
-                    lc[a].setBaixo(recompensa + fatorAprendizado * acaoAux);
-                }
-                if(i > salvaL){
-                    lc[a].setCima(recompensa + fatorAprendizado * acaoAux);
-                }
-                if(j < salvaC){
-                    lc[a].setDireita(recompensa + fatorAprendizado * acaoAux);
-                }
-                if(j > salvaC){
-                    lc[a].setEsquerda(recompensa + fatorAprendizado * acaoAux);
-                }
+                }   
+                i = 1;
+                j = 29;
             }
             salvaL = i;
             salvaC = j;
             contAux++;       
         }
-        dadosTB.close();
-        FileWriter cargafinal =  new FileWriter(new File("C:\\Users\\Reinan\\Desktop\\Q_learning\\Dados.txt"));
-        for(int c= 0 ; c < 1925 ; c++){
+        FileWriter cargafinal =  new FileWriter(new File(caminho));
+        for(int c = 0 ; c < 1925 ; c++){
             if(lc[c] == null)break;
             System.out.println(lc[c].getLinha()+";"+lc[c].getColuna()+";C"+lc[c].getCima()+";B"+lc[c].getBaixo()+";E"+lc[c].getEsquerda()+";D"+lc[c].getDireita()+"\n");
         }
